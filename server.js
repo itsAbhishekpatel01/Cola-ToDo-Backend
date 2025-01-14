@@ -2,18 +2,22 @@ const express = require('express')
 const connectDB = require('./config/db');
 const { todoRouter } = require('./routes/todo.routes');
 const cors = require('cors');
+const dotenv = require('dotenv');
+dotenv.config();
 
 connectDB();
 
-const PORT = process.env.PORT;
 
+const PORT = process.env.PORT;
 const app = express();
 
 
 app.use(express.json());
+
 app.use(cors({ origin: 'http://localhost:5173' }));
+
 app.use('/api/todo', todoRouter)
 
-app.listen(3000, ()=>{
-    console.log('Server started running on port:3000')
+app.listen(PORT, () => {
+    console.log(`Server started running on port ${PORT}`);
 })
