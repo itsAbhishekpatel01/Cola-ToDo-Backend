@@ -27,15 +27,15 @@ const createTodo = async (req, res)=>{
     return res.status(200).json({
         success: true,
         error: false,
-        message : "successfull",
-        addedTask
+        message : "Todo added successfully",
+        todo:addedTask
     })
     } catch (error) {
-        console.log('Error adding a new task', error);
+        console.log('Error adding a new todo', error);
         return res.status(500).json({
                     success: false,
                     error: true,
-                    message: 'Error adding a new task',
+                    message: 'Error adding a new todo',
                     details: error.message
         });
     }
@@ -63,7 +63,7 @@ const deleteTodo = async(req,res)=>{
     return res.status(200).json({
                 success: true,
                 error: false,
-                message : 'Todo is deleted',
+                message : 'Todo deleted successfully',
                 deleteTodo
     })
     } catch (error) {
@@ -76,7 +76,42 @@ const deleteTodo = async(req,res)=>{
     }
 }
 
-module.exports = {createTodo, getAllTodo, deleteTodo};
+const updateTodo = async(req,res)=>{
+    try {
+        const {id} = req.params;
+        const {task, priority, status} = req.body;
+    if(!id){
+        return res.status(500).json({
+                    success: false,
+                    error: true,
+                    message: 'Please provide todo id',
+        });
+    }
+    const updatedTodo = await Todo.findByIdAndUpdate(id, {task, priority, status}, {new:true});
+    if(!updatedTodo){
+        return res.status(500).json({
+                    success: false,
+                    error: true,
+                    message: 'No Todo found with this todo id',
+        });
+    }
+    return res.status(200).json({
+                success: true,
+                error: false,
+                message : 'Todo updated successfully',
+                todo:updatedTodo
+    })
+    } catch (error) {
+        return res.status(500).json({
+                    success: false,
+                    error: true,
+                    message: 'Error updating todo',
+                    details: error.message
+        });
+    }
+}
+
+module.exports = {createTodo, getAllTodo, deleteTodo, updateTodo};
 
 
 
