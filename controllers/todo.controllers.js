@@ -1,8 +1,10 @@
 const mongoose = require('mongoose')
 const Todo = require("../models/todo.models");
+const User = require('../models/user.model');
 
 const getAllTodo = async(req,res)=>{
-    const todos = await Todo.find();
+    const {userId} = req.body;
+    const todos = await Todo.find({userId});
     return res.status(200).json({
         success: true,
         error: false,
@@ -12,6 +14,15 @@ const getAllTodo = async(req,res)=>{
 
 const createTodo = async (req, res)=>{
     try {
+        const userId = req.params.userId;
+        const user = await User.findById(userId);
+        if(!user){
+            return res.status(500).json({
+                        success: false,
+                        error: true,
+                        message: 'User is not found',
+            });
+        }
         const {task, priority} = req.body;
     if(!task){
         return res.status(500).json({
@@ -22,7 +33,8 @@ const createTodo = async (req, res)=>{
     }
     const addedTask = await Todo.create({
         task:task,
-        priority:priority
+        priority:priority,
+        userId
     })
     return res.status(200).json({
         success: true,

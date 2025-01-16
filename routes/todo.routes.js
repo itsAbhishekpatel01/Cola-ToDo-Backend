@@ -3,10 +3,11 @@ const {getAllTodo, createTodo, deleteTodo,updateTodo} = require('../controllers/
 
 const todoRouter = express.Router();
 
-todoRouter.get('/', getAllTodo);
+todoRouter.post('/', getAllTodo);
 
-todoRouter.post('/add', createTodo);
+todoRouter.post('/add/:userId', createTodo);
 
 todoRouter.delete('/delete/:id', deleteTodo)
 todoRouter.put('/update/:id', updateTodo)
+
 module.exports = {todoRouter};

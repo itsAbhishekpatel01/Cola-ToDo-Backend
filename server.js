@@ -1,6 +1,7 @@
 const express = require('express')
 const connectDB = require('./config/db');
 const { todoRouter } = require('./routes/todo.routes');
+const {userRouter} =require('./routes/user.routes');
 const cors = require('cors');
 const dotenv = require('dotenv');
 dotenv.config();
@@ -20,6 +21,7 @@ app.use(cors({
 
 
 app.use('/api/todo', todoRouter)
+app.use('/api/user', userRouter)
 
 app.listen(PORT, () => {
     console.log(`Server started running on port ${PORT}`);
