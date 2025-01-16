@@ -16,7 +16,7 @@ const app = express();
 app.use(express.json());
 
 app.use(cors({
-    origin: ['https://cola-todo-frontend.onrender.com', 'http://localhost:5173'],
+    origin: [`${process.env.LOCAL_FRONTEND_URL}`, `${process.env.PRODUCTION_FRONTEND_URL}`],
 }));
 
 
