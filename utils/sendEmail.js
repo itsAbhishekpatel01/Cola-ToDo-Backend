@@ -5,7 +5,7 @@ const sendEmail = async (email, subject, text)=>{
         const transporter = nodemailer.createTransport({
             service: 'Gmail', // you can use any SMTP service like Gmail, Outlook
             auth:{
-                user: "itsabhishekpatel01@gmail.com",
+                user: "team.colatodo@gmail.com",
                 pass: `${process.env.APP_PASSWORD}`
             },
         })
