@@ -3,24 +3,25 @@ const User = require('../models/user.model')
 const bcrypt = require('bcryptjs');
 const generateToken = require('../utils/tokenUtils')
 const sendOtpTemplate = require('../utils/sendOtpTemplate')
-const sendEmail = require('../utils/sendEmail')
+const sendEmail = require('../utils/sendEmail');
+const registrationTemplate = require('../utils/registrationTemplate');
 
 const register = async (req, res)=>{
     try {
         const {username, email, password} = req.body;
     if(!username || !email || !password){
         return res.status(500).json({
-                    success: false,
-                    error: true,
-                    message: 'Please provide username, email and password!',
+            success: false,
+            error: true,
+            message: 'Please provide username, email and password!',
         });
     }
     const user = await User.findOne({email});
     if(user){
         return res.status(500).json({
-                    success: false,
-                    error: true,
-                    message: 'Email already registered',
+            success: false,
+            error: true,
+            message: 'Email already registered',
         });
     }
 
@@ -30,18 +31,21 @@ const register = async (req, res)=>{
         email,
         password:hashedPassword
     })
+    const subject = 'Welcome to Cola Todo!';
+    const text = registrationTemplate({username});
+    await sendEmail(email, subject, text);
     return res.status(200).json({
-                success: true,
-                error: false,
-                message : 'User registered successfully',
-                savedUser
+        success: true,
+        error: false,
+        message : 'User registered successfully',
+        savedUser
     })
     } catch (error) {
         return res.status(500).json({
-                    success: false,
-                    error: true,
-                    message: 'Error creating new user',
-                    details: error.message
+            success: false,
+            error: true,
+            message: 'Error creating new user',
+            details: error.message
         });
     }
 }
