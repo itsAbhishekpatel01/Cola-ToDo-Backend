@@ -1,10 +1,11 @@
 const mongoose =require('mongoose')
 const User = require('../models/user.model')
 const bcrypt = require('bcryptjs');
-const generateToken = require('../utils/tokenUtils')
 const sendOtpTemplate = require('../utils/sendOtpTemplate')
 const sendEmail = require('../utils/sendEmail');
 const registrationTemplate = require('../utils/registrationTemplate');
+const { generateToken } = require('../utils/tokenUtils');
+const jwt = require('jsonwebtoken');
 
 const register = async (req, res)=>{
     try {
@@ -31,15 +32,20 @@ const register = async (req, res)=>{
         email,
         password:hashedPassword
     })
-    const subject = 'Welcome to Cola Todo!';
-    const text = registrationTemplate({username});
-    await sendEmail(email, subject, text);
-    return res.status(200).json({
-        success: true,
-        error: false,
-        message : 'User registered successfully',
-        savedUser
-    })
+    if(savedUser){
+        // generate the jwt token here
+        generateToken(savedUser._id, res);
+        await savedUser.save();
+        const subject = 'Welcome to Cola Todo!';
+        const text = registrationTemplate({username});
+        await sendEmail(email, subject, text);
+        return res.status(200).json({
+            success: true,
+            error: false,
+            message : 'User registered successfully',
+            savedUser
+        });
+    }
     } catch (error) {
         return res.status(500).json({
             success: false,
@@ -78,7 +84,14 @@ const login = async (req,res)=>{
                     message: 'Invalid credentials',
         });
     }
-
+    // generateToken(user._id, res);
+    const token = jwt.sign({id: user._id}, process.env.JWT_SECRET, {expiresIn: '1d'});
+    res.cookie('jwt', token, {
+        httpOnly: true,
+        secure: false,
+        sameSite: 'Lax', // ensure cross-site sending
+        maxAge: 3600000
+    })
     return res.status(200).json({
                 success: true,
                 error: false,
@@ -95,7 +108,15 @@ const login = async (req,res)=>{
     }
 }
 
-
+const logout = async (req,res) => {
+    try {
+        res.cookie("jwt", '', {maxAge: 0});
+        return res.status(200).json({message: 'Logout successful'});
+    } catch (error) {
+        console.log('Logout error',error);
+        res.status(500).json({message: 'Server error', error});
+    }
+}
 
 const forgotPassword = async (req,res)=>{
     try {
@@ -242,5 +263,14 @@ const resetPassword = async (req,res)=>{
     }
 }
 
+const checkAuth = async (req,res)=>{
+    try {
+        console.log('Yes they came to me, i am checking auth');
+        return res.status(200).json({user: req.user});
+    } catch (error) {
+        console.log('Check auth error',error);
+        res.status(500).json({message: 'Server error', error});
+    }
+}
 
-module.exports = {register, login, forgotPassword, verifyForgotPasswordOtp, resetPassword};
+module.exports = {register, login,logout, forgotPassword, verifyForgotPasswordOtp, resetPassword, checkAuth};

@@ -2,19 +2,29 @@ const mongoose = require('mongoose')
 const Todo = require("../models/todo.models");
 const User = require('../models/user.model');
 
-const getAllTodo = async(req,res)=>{
-    const {userId} = req.body;
-    const todos = await Todo.find({userId});
-    return res.status(200).json({
-        success: true,
-        error: false,
-        todos : todos
-    })
+const getAllTodo = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const todos = await Todo.find({ userId });
+        console.log('You have these todos:', todos);
+        return res.status(200).json({
+            success: true,
+            error: false,
+            todos: todos
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            error: true,
+            message: 'Error fetching todos',
+            details: error.message
+        });
+    }
 }
 
 const createTodo = async (req, res)=>{
     try {
-        const userId = req.params.userId;
+        const userId = req.user._id;
         const user = await User.findById(userId);
         if(!user){
             return res.status(500).json({

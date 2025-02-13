@@ -1,9 +1,13 @@
-const crypto = require('crypto')
+const jwt = require('jsonwebtoken')
 
-const generateToken = ()=>{
-    const token = crypto.randomBytes(32).toString('hex');
-    const expires = Date.now()+3600000; //1 hour from now
-    return {token, expires};
+const generateToken = (userId, res)=>{
+    const token = jwt.sign({userId}, process.env.JWT_SECRET, {expiresIn:'7d'});
+    res.cookie("jwt", token, {
+        maxAge: 7*24*60*60*1000, // 7 days
+        httpOnly: true, // cookie cannot be accessed by client side script
+        sameSite: true, // cookie cannot be accessed by cross-site requests
+        secure: process.env.NODE_ENV === 'production' ? true : false // cookie can only be sent over https
+    })
 }
 
-module.exports = generateToken;
+module.exports = {generateToken};
