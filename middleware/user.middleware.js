@@ -5,7 +5,6 @@ const protectRoute = async (req, res, next) => {
     try {
         // when the user tries to acces a private routes (e.g. /profile, /dashboard)
         // the browser automatically includes the jwt cookie in the request headers
-        console.log('ok so i am getting this req in protect rotue middlwware:',req.cookies);
         const token = req.cookies.jwt;
         if(!token){
             return res.status(401).json({message: 'Unauthorized access'});

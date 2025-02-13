@@ -7,22 +7,16 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 dotenv.config();
 
-
-
 const PORT = process.env.PORT;
 const app = express();
 
-
 app.use(express.json());
 
-// app.use(cors({
-//     origin: [`${process.env.LOCAL_FRONTEND_URL}`, `${process.env.PRODUCTION_FRONTEND_URL}`],
-// }));
-
 app.use(cors({
-    origin: "http://localhost:5173",  // ✅ Replace with your frontend URL
-    credentials: true,  // ✅ Allow cookies
+    origin: [`${process.env.LOCAL_FRONTEND_URL}`, `${process.env.PRODUCTION_FRONTEND_URL}`],
+    credentials: true,
 }));
+
 
 app.use(cookieParser()); 
 

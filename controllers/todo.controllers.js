@@ -6,7 +6,6 @@ const getAllTodo = async (req, res) => {
     try {
         const userId = req.user._id;
         const todos = await Todo.find({ userId });
-        console.log('You have these todos:', todos);
         return res.status(200).json({
             success: true,
             error: false,

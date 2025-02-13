@@ -265,7 +265,6 @@ const resetPassword = async (req,res)=>{
 
 const checkAuth = async (req,res)=>{
     try {
-        console.log('Yes they came to me, i am checking auth');
         return res.status(200).json({user: req.user});
     } catch (error) {
         console.log('Check auth error',error);
